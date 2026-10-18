@@ -1,0 +1,25 @@
+{
+  "name": "Sorobín y el Ábaco Mágico",
+  "short_name": "Ábaco Sorobín",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EFF6FF",
+  "theme_color": "#FF7828",
+  "orientation": "landscape",
+  "description": "Juego interactivo infantil para aprender ábaco japonés (Soroban) con Sorobín, voz guiada, modo libre y recompensas.",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

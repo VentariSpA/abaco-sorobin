@@ -1,0 +1,16 @@
+{
+  "name": "sorobin-abaco-japones",
+  "version": "1.0.0",
+  "description": "Juego interactivo infantil para aprender ábaco japonés (Soroban)",
+  "scripts": {
+    "start": "python -m http.server 3000"
+  },
+  "keywords": [
+    "soroban",
+    "abacus",
+    "juego-infantil",
+    "educacion"
+  ],
+  "author": "",
+  "license": "MIT"
+}

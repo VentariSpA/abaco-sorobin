@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Sorobín y el Ábaco Mágico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;900&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20261018k">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FF7828">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+  <div id="app" class="game-container">
+    
+    <!-- BARRA SUPERIOR COMPACTA Y ELEGANTE (SIN TEXTO ENVOLVENTE) -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button id="btnLevelMap" class="level-badge-btn" title="Ver mapa de niveles">
+          <span class="badge-icon">🗺️</span>
+          <span class="badge-text" id="levelName">Nivel 0</span>
+          <span class="badge-arrow">▼</span>
+        </button>
+
+        <button id="btnFreeModeToggle" class="mode-badge-btn" title="Alternar entre Retos y Modo Libre">
+          <span class="badge-text" id="modeBtnText">🎮 Libre</span>
+        </button>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="stars-counter" id="starsCounter" title="Estrellitas mágicas guardadas">
+          <span class="star-icon">⭐</span>
+          <span class="star-count" id="starCount">0</span>
+        </div>
+
+        <button id="btnSettingsToggle" class="icon-btn" title="Configuración de sonido y volumen" aria-label="Ajustes">
+          ⚙️
+        </button>
+
+        <button id="btnVoiceToggle" class="icon-btn" title="Activar/Silenciar voz" aria-label="Control de voz">
+          🔊
+        </button>
+      </div>
+    </header>
+
+    <!-- ESCENARIO PRINCIPAL (DOS PANELES EQUILIBRADOS EN HORIZONTAL) -->
+    <main class="main-stage">
+      
+      <!-- COLUMNA IZQUIERDA: SOROBÍN Y META DEL RETO -->
+      <section class="left-panel">
+        
+        <!-- Tarjeta de Sorobín y su diálogo -->
+        <div class="mascot-card">
+          <div class="mascot-avatar-wrapper" id="mascotAvatarWrap">
+            <div id="mascotContainer" class="mascot-svg-box"></div>
+          </div>
+          <div class="speech-bubble" id="speechBubble">
+            <p id="speechText" class="speech-text">
+              ¡Hola! Soy Sorobín. ¡Sube una bolita hacia la viga!
+            </p>
+            <button id="btnRepeatSpeech" class="repeat-speech-btn" title="Repetir voz">
+              <span>🔊 Repetir</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Meta del Reto (Modo Aventura / Niveles) -->
+        <div class="goal-card" id="goalCard">
+          <div class="goal-header">
+            <span class="goal-tag">🎯 META:</span>
+            <div class="goal-stars" id="visualCounter">⭐</div>
+          </div>
+          <div class="goal-big-number" id="targetNumber">1</div>
+        </div>
+
+        <!-- Pantallita Digital Mágica (Modo Libre / Laboratorio) -->
+        <div class="free-lcd-card hidden" id="freeLcdCard">
+          <div class="free-lcd-header">
+            <span class="free-lcd-tag">✨ PANTALLITA MÁGICA</span>
+            <div class="rod-selector" id="rodSelector">
+              <span class="rod-sel-title">Varillas:</span>
+              <button class="rod-sel-btn active" data-rods="1">1</button>
+              <button class="rod-sel-btn" data-rods="2">2</button>
+              <button class="rod-sel-btn" data-rods="3">3</button>
+              <button class="rod-sel-btn" data-rods="4">4</button>
+            </div>
+          </div>
+          <div class="free-lcd-screen">
+            <div class="free-lcd-main">
+              <span class="free-lcd-number" id="freeLcdNumber">0</span>
+              <button id="btnSpeakFreeNum" class="free-speak-btn" title="Escuchar número">🔊</button>
+            </div>
+            <!-- Descomposición en 1 fila horizontal fija sin saltos confusos -->
+            <div class="free-lcd-breakdown" id="freeLcdBreakdown">
+              <span class="pv-chip chip-u">0 U</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción (Limpiar a 0 y Pista) -->
+        <div class="panel-controls">
+          <button id="btnClearAbacus" class="control-btn btn-clear" title="Separar todas las bolitas de la barra">
+            <span class="btn-icon">🧹</span>
+            <span class="btn-label">Limpiar a 0</span>
+          </button>
+          <button id="btnHelp" class="control-btn btn-help" title="Pedir una pista">
+            <span class="btn-icon">💡</span>
+            <span class="btn-label">Pista</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- COLUMNA DERECHA: EL ÁBACO DE MADERA Y SU VISOR EN TIEMPO REAL -->
+      <section class="right-panel">
+        <div class="abacus-workspace">
+          
+          <!-- Marco de madera noble del Soroban -->
+          <div class="soroban-frame rods-1" id="sorobanFrame">
+            <!-- Barra de cabecera de columnas Montessori (UM, C, D, U) -->
+            <div class="soroban-col-headers" id="sorobanColHeaders"></div>
+
+            <!-- Tablero de varillas y cuentas -->
+            <div class="soroban-board" id="sorobanBoard"></div>
+
+            <!-- Mano Guía Animada (aparece solo en tutorial o al pulsar Pista) -->
+            <div id="ghostHand" class="ghost-hand hidden">
+              <div class="hand-icon">👆</div>
+            </div>
+          </div>
+
+          <!-- Placa de madera con valor en tiempo real y botón de siguiente reto -->
+          <div class="abacus-value-plaque" id="valuePlaque">
+            <div class="plaque-header">
+              <span class="plaque-tag">TU ÁBACO</span>
+              <div class="plaque-stars" id="liveCounter">⚪</div>
+            </div>
+            <div class="plaque-value-row">
+              <span class="plaque-number" id="currentAbacusValue">0</span>
+              <div class="plaque-check hidden" id="sideCheck">✅</div>
+              <!-- Botón directo de avanzar para que nunca se quede bloqueado -->
+              <button id="btnNextChallenge" class="next-challenge-btn hidden" title="Avanzar al siguiente reto">
+                <span>¡Siguiente! ➡️</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL INTERACTIVO DE MAPA DE NIVELES CON SCROLLING FLUIDO -->
+    <div id="levelsModal" class="modal-backdrop hidden">
+      <div class="levels-modal-card bounce-in">
+        <div class="levels-modal-header">
+          <div class="levels-header-title">
+            <span class="header-icon">🗺️</span>
+            <h2>Mapa de Niveles</h2>
+          </div>
+          <button id="btnCloseLevels" class="close-levels-btn" title="Cerrar mapa">✖</button>
+        </div>
+
+        <!-- Tarjeta de acceso a Modo Libre dentro del modal -->
+        <div class="free-mode-banner-card" id="btnOpenFreeMode">
+          <div class="free-card-left">
+            <span class="free-card-icon">🎨</span>
+            <div class="free-card-info">
+              <span class="free-card-title">Modo Libre (Laboratorio)</span>
+              <span class="free-card-sub">Explora números en la pantallita sin metas</span>
+            </div>
+          </div>
+          <span class="free-card-pill">ENTRAR ✨</span>
+        </div>
+
+        <p class="levels-modal-subtitle">Supera retos para desbloquear nuevos niveles:</p>
+
+        <!-- Cuadrícula interactiva de niveles -->
+        <div class="levels-grid" id="levelsGrid">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CLÁSICO DE CONFIGURACIÓN DEL JUEGO (VOLUMEN, VOZ, SFX) -->
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <div class="settings-modal-card bounce-in">
+        <div class="settings-modal-header">
+          <div class="settings-header-title">
+            <span class="header-icon">⚙️</span>
+            <h2>Ajustes de Sonido</h2>
+          </div>
+          <button id="btnCloseSettings" class="close-settings-btn" title="Cerrar ajustes">✖</button>
+        </div>
+
+        <div class="settings-content">
+          <!-- 1. Volumen General -->
+          <div class="setting-group">
+            <div class="setting-row-header">
+              <span class="setting-label">🎚️ Volumen General</span>
+              <span class="setting-value-badge" id="lblMasterVol">100%</span>
+            </div>
+            <input type="range" id="sliderMasterVol" class="setting-slider" min="0" max="100" value="100" step="5">
+          </div>
+
+          <!-- 2. Voz de Sorobín -->
+          <div class="setting-group">
+            <div class="setting-row-header">
+              <span class="setting-label">🗣️ Voz de Sorobín</span>
+              <div class="setting-controls-right">
+                <span class="setting-value-badge" id="lblVoiceVol">100%</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleVoice" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <input type="range" id="sliderVoiceVol" class="setting-slider" min="0" max="100" value="100" step="5">
+            <div class="setting-actions">
+              <button id="btnTestVoice" class="test-sound-btn" title="Probar voz de Sorobín">
+                <span>🔊 Probar Voz</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Efectos de Sonido (Ábaco y Fanfarrias) -->
+          <div class="setting-group">
+            <div class="setting-row-header">
+              <span class="setting-label">🔔 Clics del Ábaco y Efectos</span>
+              <div class="setting-controls-right">
+                <span class="setting-value-badge" id="lblSfxVol">100%</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleSfx" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <input type="range" id="sliderSfxVol" class="setting-slider" min="0" max="100" value="100" step="5">
+            <div class="setting-actions">
+              <button id="btnTestSfx" class="test-sound-btn" title="Probar sonido del ábaco">
+                <span>🧮 Probar Clic</span>
+              </button>
+              <button id="btnTestFanfare" class="test-sound-btn" title="Probar fanfarria de éxito">
+                <span>⭐ Probar Triunfo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-modal-footer">
+          <button id="btnSaveSettings" class="btn-save-settings">
+            <span>✓ Listo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Victoria de Nivel con confeti -->
+    <div id="celebrationModal" class="modal-backdrop hidden">
+      <div class="modal-card bounce-in">
+        <div class="modal-mascot-cheer" id="modalMascot"></div>
+        <h2 class="modal-title" id="modalTitle">¡INCREÍBLE!</h2>
+        <p class="modal-message" id="modalMessage">¡Eres toda una maestra del ábaco!</p>
+        <div class="modal-stars" id="modalStars">⭐⭐⭐</div>
+        <button id="modalBtnContinue" class="btn-continue">
+          ¡Siguiente nivel! 🚀
+        </button>
+      </div>
+    </div>
+
+    <!-- Canvas para confeti -->
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+    <!-- Pantalla de bienvenida -->
+    <div id="startOverlay" class="start-overlay">
+      <div class="start-card">
+        <div class="start-mascot" id="startMascot"></div>
+        <h1 class="start-title">Sorobín y el Ábaco Mágico</h1>
+        <p class="start-subtitle">¡Mueve las bolitas con tu dedo, escucha a Sorobín y aprende jugando!</p>
+        <button id="btnStartGame" class="btn-start pulse-glow">
+          ¡A Jugar! 🦊✨
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/audio.js?v=20261018r"></script>
+  <script src="js/mascot.js?v=20261018r"></script>
+  <script src="js/soroban.js?v=20261018r"></script>
+  <script src="js/levels.js?v=20261018r"></script>
+  <script src="js/app.js?v=20261018r"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('ServiceWorker error:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
